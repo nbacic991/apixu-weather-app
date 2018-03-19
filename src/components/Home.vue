@@ -1,6 +1,6 @@
 <template>
 <div>
-  <div class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
+  <div v-if="!loading" class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
     <div class='main' >
       <div class='wicon'>
         <img :src="forecast.forecastday[0].day.condition.icon" :alt="city">
@@ -40,7 +40,8 @@ export default {
       forecast: [],
       location: [],
       placeId: '',
-      image: ''
+      image: '',
+      loading: true
     }
   },
   mounted() {
@@ -64,6 +65,7 @@ export default {
               axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeId}&key=${apiKey}`)
               .then(response => {
                 this.image = response.data.result.photos[0].photo_reference
+                this.loading = false
               })
             })
           })
