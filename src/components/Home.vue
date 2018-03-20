@@ -1,33 +1,37 @@
 <template>
-<div>
+<div >
+  <v-progress-circular 
+        indeterminate
+        color="primary--text"
+        :width="7"
+        :size="70"
+        v-if="loading"></v-progress-circular>
   <div v-if="!loading" class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
-    <div class='main' >
-      <div class='wicon'>
-        <img :src="forecast.forecastday[0].day.condition.icon" :alt="city">
-      </div>
-      <h1>{{ city }}</h1>
-      <div class="current-tem">
-        {{current.temp_c + '°C'}} 
-        <p>Feels like: {{ current.feelslike_c + '°C' }}</p>
-        
+    <div class='main'>
+      <div class='stats'>
+        <i :class="'wi wi-'+ icon + ' large'"></i>
+        <h1>{{ city }}</h1>
       </div>
     </div>
-    
   </div>
   <gmap-map
-      :options="{scrollwheel: false}"
-      :center="{lat:location.lat, lng:location.lon}"
-      :zoom="7"
-      style="width: 500px; height: 300px">
-        <gmap-marker
-        :position="{lat:location.lat, lng:location.lon}"></gmap-marker>
-    </gmap-map>
+    v-if="!loading"
+    :options="{scrollwheel: false}"
+    :center="{lat: latitude, lng: longitude }"
+    :zoom="7"
+    style="width: 100%; height: 300px">
+      <gmap-marker
+        v-bind:position="{lat: latitude, lng: longitude}"></gmap-marker>
+      </gmap-map>
 </div>
   
 </template>
 
 <script>
+
+import DarkSkyApi from 'dark-sky-api'
 import axios from 'axios'
+import '../assets/weather-icons.min.css'
 
 const apiKey = 'AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc'
 
@@ -36,11 +40,11 @@ export default {
   data () {
     return {
       city: '',
-      current: [],
-      forecast: [],
-      location: [],
+      latitude: '',
+      longitude: '',
       placeId: '',
       image: '',
+      icon: '',
       loading: true
     }
   },
@@ -49,17 +53,19 @@ export default {
   },
   methods: {
     getIp() {
-      axios.get("https://ipinfo.io")
-      .then(response => {
-        this.city = response.data.city
-        axios.get(`https://api.apixu.com/v1/forecast.json?key=324b63316a4440e4ad675706181903&q=${response.data.city}`)
-          .then(response => {
-            this.current = response.data.current
-            this.forecast = response.data.forecast
-            this.location = response.data.location
+      DarkSkyApi.loadForecast()
+      .then(result => {
+        console.log(result)
+        this.latitude = result.latitude
+        this.longitude = result.longitude
+        this.icon = result.daily.icon
+        axios.post(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${result.latitude},${result.longitude}&key=${apiKey}`)
+        .then(response => {
+          console.log(response)
+          this.city = response.data.results[0].address_components[2].long_name
 
-            const proxyurl = "https://cors-anywhere.herokuapp.com/";
-            axios.get( proxyurl + `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${this.city}&key=${apiKey}`)
+          const proxyurl = "https://cors-anywhere.herokuapp.com/";
+          axios.get( proxyurl + `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${this.city}&key=${apiKey}`)
             .then(res => {
               this.placeId = res.data.results[0].place_id
               axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeId}&key=${apiKey}`)
@@ -68,7 +74,7 @@ export default {
                 this.loading = false
               })
             })
-          })
+        })
       });
     }
   }
@@ -76,10 +82,21 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style scoped lang="scss">
 .main-app {
   background-repeat: no-repeat;
-  background-size: cover;
+  background-size: 100%;
   width: 100%;
+  .main {
+    padding: 50px 0;
+    .stats {
+      max-width: 500px;
+      width: 100%;
+      margin: auto;
+      padding: 20px 0;
+      height: 300px;
+      background-color: rgba(255, 255, 255, 0.6);
+    }
+  }
 }
 </style>

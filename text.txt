@@ -1,0 +1,37 @@
+DarkSkyApi.loadForecast()
+      .then(result => {
+        console.log(result)
+        this.latitude = result.latitude
+        this.longitude = result.longitude
+        this.loading = false
+        axios.post(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${result.latitude},${result.longitude}&key=${apiKey}`)
+        .then(response => {
+          console.log(response)
+          this.city = response.data.results
+          const proxyurl = "https://cors-anywhere.herokuapp.com/";
+        })
+      });
+
+      
+
+axios.get("https://ipinfo.io")
+      .then(response => {
+        this.city = response.data.city
+        axios.get(`https://api.apixu.com/v1/forecast.json?key=324b63316a4440e4ad675706181903&q=${response.data.city}`)
+          .then(response => {
+            this.current = response.data.current
+            this.forecast = response.data.forecast
+            this.location = response.data.location
+
+            const proxyurl = "https://cors-anywhere.herokuapp.com/";
+            axios.get( proxyurl + `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${this.city}&key=${apiKey}`)
+            .then(res => {
+              this.placeId = res.data.results[0].place_id
+              axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeId}&key=${apiKey}`)
+              .then(response => {
+                this.image = response.data.result.photos[0].photo_reference
+                this.loading = false
+              })
+            })
+          })
+      });

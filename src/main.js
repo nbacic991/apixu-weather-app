@@ -3,11 +3,30 @@
 import Vue from 'vue'
 import App from './App'
 import VueResource from 'vue-resource'
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 import router from './router'
+import DarkSkyApi from 'dark-sky-api';
 
 import * as VueGoogleMaps from 'vue2-google-maps'
 
-Vue.use(VueResource);
+// Helpers
+import colors from 'vuetify/es5/util/colors'
+
+DarkSkyApi.apiKey = '1aaed77b588e96a0a896635a8d15f436';
+
+Vue.use(Vuetify, {
+  theme: {
+    primary: colors.red.darken1,
+    accent: colors.red.accent2,
+    secondary: colors.grey.lighten1,
+    info: colors.blue.lighten1,
+    warning: colors.amber.darken2,
+    error: colors.red.accent4,
+    success: colors.green.lighten2
+  }
+})
+Vue.use(VueResource)
 
 Vue.use(VueGoogleMaps, {
   load: {
