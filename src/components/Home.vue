@@ -140,7 +140,7 @@ export default {
     }
     @media screen {
       .main {
-        padding: 50px;
+        padding: 55px;
       }
       .wrapper {
         .box {
