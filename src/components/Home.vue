@@ -9,9 +9,11 @@
   <div v-if="!loading" class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
     <div class='main'>
       <div class="wrapper">
-        <div class="box a">A</div>
+        <div class="box a space">
+          <h3>You are in: {{ city }}</h3>
+          <p>Current time is: {{ currTime | moment }}</p>
+        </div>
         <div class="box b">
-          <h3>{{ currTime | moment }}</h3>
           <i :class="'wi wi-'+ icon + ' large'"></i>
           <h3>{{ city }}</h3>
           <p class="large">{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</p>
@@ -71,7 +73,7 @@ export default {
     getCurrent() {
       DarkSkyApi.loadCurrent() 
         .then(result => {
-          console.log(result)
+          // console.log(result)
           this.temp = result.temperature
           this.currTime = result.time
         })
@@ -79,7 +81,7 @@ export default {
     getForecast() {
       DarkSkyApi.loadForecast()
       .then(result => {
-        console.log(result)
+        // console.log(result)
         this.latitude = result.latitude
         this.longitude = result.longitude
         this.icon = result.daily.icon
@@ -115,6 +117,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.space {
+  padding: 50px 0;
+}
 .large {
   font-size: 50px;
   margin: 20px;
@@ -123,6 +128,13 @@ export default {
 /**
  * Helper classes
  */
+ 
+.progress-circular {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
 .main-app {
   background-repeat: no-repeat;
   background-size: cover;
