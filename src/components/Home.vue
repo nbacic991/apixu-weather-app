@@ -8,9 +8,20 @@
         v-if="loading"></v-progress-circular>
   <div v-if="!loading" class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
     <div class='main'>
-      <div class='stats'>
-        <i :class="'wi wi-'+ icon + ' large'"></i>
-        <h1>{{ city }}</h1>
+      <div class="wrapper">
+        <div class="box a">A</div>
+        <div class="box b">
+          <h3>{{ currTime | moment }}</h3>
+          <i :class="'wi wi-'+ icon + ' large'"></i>
+          <h3>{{ city }}</h3>
+          <p class="large">{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</p>
+        </div>
+        <div class="box c">
+          <div v-for="(day, i) in days" :key="i" class="single-day">
+            <p>{{ day.dateTime._i | dayFormatter }}</p>
+            <p>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -18,7 +29,7 @@
     v-if="!loading"
     :options="{scrollwheel: false}"
     :center="{lat: latitude, lng: longitude }"
-    :zoom="7"
+    :zoom="14"
     style="width: 100%; height: 300px">
       <gmap-marker
         v-bind:position="{lat: latitude, lng: longitude}"></gmap-marker>
@@ -31,6 +42,7 @@
 
 import DarkSkyApi from 'dark-sky-api'
 import axios from 'axios'
+import moment from 'moment'
 import '../assets/weather-icons.min.css'
 
 const apiKey = 'AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc'
@@ -45,23 +57,35 @@ export default {
       placeId: '',
       image: '',
       icon: '',
+      temp: '',
+      currTime: '',
+      days: [],
       loading: true
     }
   },
   mounted() {
-    this.getIp()
+    this.getCurrent()
+    this.getForecast()
   },
   methods: {
-    getIp() {
+    getCurrent() {
+      DarkSkyApi.loadCurrent() 
+        .then(result => {
+          console.log(result)
+          this.temp = result.temperature
+          this.currTime = result.time
+        })
+    },
+    getForecast() {
       DarkSkyApi.loadForecast()
       .then(result => {
         console.log(result)
         this.latitude = result.latitude
         this.longitude = result.longitude
         this.icon = result.daily.icon
+        this.days = result.daily.data
         axios.post(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${result.latitude},${result.longitude}&key=${apiKey}`)
         .then(response => {
-          console.log(response)
           this.city = response.data.results[0].address_components[2].long_name
 
           const proxyurl = "https://cors-anywhere.herokuapp.com/";
@@ -77,26 +101,85 @@ export default {
         })
       });
     }
+  },
+  filters: {
+    moment() {
+      return moment().format("HH:mm");
+    },
+    dayFormatter(value) {
+      return moment(value).format('dddd');
+    }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.large {
+  font-size: 50px;
+  margin: 20px;
+}
+
+/**
+ * Helper classes
+ */
 .main-app {
   background-repeat: no-repeat;
-  background-size: 100%;
+  background-size: cover;
   width: 100%;
   .main {
     padding: 50px 0;
-    .stats {
-      max-width: 500px;
-      width: 100%;
-      margin: auto;
-      padding: 20px 0;
-      height: 300px;
-      background-color: rgba(255, 255, 255, 0.6);
+    .wrapper {
+      display: block;
+      box {
+        &.c {
+          display: flex;
+          justify-content: space-around;
+        }
+      }
     }
+    @media screen {
+      .main {
+        padding: 50px;
+      }
+      .wrapper {
+        .box {
+          background-color: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+    @media screen and (min-width: 760px) {
+      .wrapper {
+      display: grid;
+      grid-column-gap: 10px;
+      grid-row-gap: 10px;
+      padding: 0 20px;
+      .box {
+        background-color: rgba(255, 255, 255, 0.6);
+        color: #000000;
+        border-radius: 5px;
+        padding: 20px;
+        font-size: 150%;
+        &.a {
+          grid-column: 1 / 3;
+          grid-row: 1;
+        }
+        &.b {
+          grid-column: 3 ;
+          grid-row: 1 / 3;
+        }
+        &.c {
+          display: flex;
+          justify-content: space-around;
+          grid-column: 1 / 3;
+          grid-row: 2 ;
+          p {
+            font-size: 16px;
+          }
+        }
+      }
+    }
+    } 
   }
 }
 </style>
