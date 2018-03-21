@@ -15,9 +15,22 @@ import colors from 'vuetify/es5/util/colors'
 
 DarkSkyApi.apiKey = '1aaed77b588e96a0a896635a8d15f436';
 
+
+Vue.use(VueResource)
+
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc',
+    v: '3.30',
+    libraries: 'places'
+  }
+});
+
+Vue.config.productionTip = false
+
 Vue.use(Vuetify, {
   theme: {
-    primary: colors.red.darken1,
+    primary: colors.red.darken-1,
     accent: colors.red.accent2,
     secondary: colors.grey.lighten1,
     info: colors.blue.lighten1,
@@ -25,17 +38,7 @@ Vue.use(Vuetify, {
     error: colors.red.accent4,
     success: colors.green.lighten2
   }
-})
-Vue.use(VueResource)
-
-Vue.use(VueGoogleMaps, {
-  load: {
-    key: 'AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc',
-    v: '3.30'
-  }
 });
-
-Vue.config.productionTip = false
 
 /* eslint-disable no-new */
 new Vue({

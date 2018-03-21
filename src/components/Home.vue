@@ -17,15 +17,21 @@
           <i :class="'wi wi-'+ icon + ' large'"></i>
           <h3>{{ city }}</h3>
           <p class="large">{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</p>
+          <i class="fas fa-thermometer-quarter"></i>
+          <span>{{ ((days[0].temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+          <p>{{ ((days[0].temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</p>
         </div>
         <div class="box c">
           <div v-for="(day, i) in days" :key="i" class="single-day">
             <p>{{ day.dateTime._i | dayFormatter }}</p>
-            <p>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+            <span>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+            <span>/</span>
+            <span>{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
           </div>
         </div>
       </div>
     </div>
+    <v-btn color="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
   </div>
   <gmap-map
     v-if="!loading"
@@ -35,7 +41,7 @@
     style="width: 100%; height: 300px">
       <gmap-marker
         v-bind:position="{lat: latitude, lng: longitude}"></gmap-marker>
-      </gmap-map>
+  </gmap-map>
 </div>
   
 </template>
@@ -73,15 +79,15 @@ export default {
     getCurrent() {
       DarkSkyApi.loadCurrent() 
         .then(result => {
-          // console.log(result)
-          this.temp = result.temperature
-          this.currTime = result.time
-        })
+        // console.log(result)
+        this.temp = result.temperature
+        this.currTime = result.time
+        console.log(result)
+      })
     },
     getForecast() {
       DarkSkyApi.loadForecast()
       .then(result => {
-        // console.log(result)
         this.latitude = result.latitude
         this.longitude = result.longitude
         this.icon = result.daily.icon
@@ -102,6 +108,9 @@ export default {
             })
         })
       });
+    },
+    placesNearby() {
+      this.$router.push('/places')
     }
   },
   filters: {
@@ -117,6 +126,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.fas {
+  font-family: FontAwesome;
+  font-size: 50px;
+  text-align: left;
+  font-style: initial;
+}
 .space {
   padding: 50px 0;
 }
@@ -143,10 +158,15 @@ export default {
     padding: 50px 0;
     .wrapper {
       display: block;
-      box {
+      .box {
         &.c {
           display: flex;
           justify-content: space-around;
+          .single-day {
+            span {
+              font-size: 15px;
+            }
+          }
         }
       }
     }
