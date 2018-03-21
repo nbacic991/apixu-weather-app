@@ -10,7 +10,8 @@
     <div class='main'>
       <div class="wrapper">
         <div class="box a space">
-          <h3>You are in: {{ city }}</h3>
+          <h3 class="medium">You are in: <br> {{ city }}</h3>
+          <br>
           <p>Current time is: {{ currTime | moment }}</p>
         </div>
         <div class="box b">
@@ -22,16 +23,16 @@
             <span>{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</span>
           </p>
           <div class="temp">
-            <p class="medium"> Max temp: {{ ((days[0].temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</p>
-            <p class="medium"> Max temp: {{ ((days[0].temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+            <p> Max temp: {{ ((days[0].temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+            <p> Max temp: {{ ((days[0].temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</p>
           </div>
         </div>
         <div class="box c">
-          <div v-for="(day, i) in days" :key="i" class="single-day medium">
+          <div v-for="(day, i) in days" :key="i" class="single-day ">
             <p>{{ day.dateTime._i | dayFormatter }}</p>
-            <span class="medium">{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+            <span>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
             <span>/</span>
-            <span class="medium">{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+            <span>{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
           </div>
         </div>
       </div>
@@ -142,6 +143,7 @@ export default {
 }
 .space {
   padding: 50px 0;
+  margin-bottom: 20px;
 }
 .large {
   font-size: 70px;
@@ -150,7 +152,6 @@ export default {
 .medium {
   font-size: 35px;
 }
-
 /**
  * Helper classes
  */
@@ -170,22 +171,32 @@ export default {
     .wrapper {
       display: block;
       .box {
+        &.b {
+          .temp {
+            padding: 15px 0;
+            margin-bottom: 20px;
+          }
+        }
         &.c {
           display: flex;
           justify-content: space-around;
           .single-day {
-            padding: 30px 0;
+            padding: 20px 0;
           }
         }
       }
     }
-    @media screen {
+    @media screen and (max-width: 760px) {
       .main {
         padding: 55px;
       }
       .wrapper {
+        max-width: 400px;
+        width: 100%;
+        margin: auto;
+        background-color: rgba(255, 255, 255, 0.6);
         .box {
-          background-color: rgba(255, 255, 255, 0.6);
+          
           &.c {
             display: block;
           }
