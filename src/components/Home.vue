@@ -16,22 +16,27 @@
         <div class="box b">
           <i :class="'wi wi-'+ icon + ' large'"></i>
           <h3>{{ city }}</h3>
-          <p class="large">{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</p>
-          <i class="fas fa-thermometer-quarter"></i>
-          <span>{{ ((days[0].temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
-          <p>{{ ((days[0].temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+          
+          <p class="large">
+            <i class="fas fa-thermometer-quarter large"></i>
+            <span>{{((temp - 32)* 0.5556).toFixed(0) + '°C'}}</span>
+          </p>
+          <div class="temp">
+            <p class="medium"> Max temp: {{ ((days[0].temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+            <p class="medium"> Max temp: {{ ((days[0].temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</p>
+          </div>
         </div>
         <div class="box c">
-          <div v-for="(day, i) in days" :key="i" class="single-day">
+          <div v-for="(day, i) in days" :key="i" class="single-day medium">
             <p>{{ day.dateTime._i | dayFormatter }}</p>
-            <span>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+            <span class="medium">{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
             <span>/</span>
-            <span>{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
+            <span class="medium">{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
           </div>
         </div>
       </div>
     </div>
-    <v-btn color="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
+    <v-btn class="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
   </div>
   <gmap-map
     v-if="!loading"
@@ -126,6 +131,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped lang="scss">
+.primary {
+  background-color: #2196f3;
+}
 .fas {
   font-family: FontAwesome;
   font-size: 50px;
@@ -136,8 +144,11 @@ export default {
   padding: 50px 0;
 }
 .large {
-  font-size: 50px;
+  font-size: 70px;
   margin: 20px;
+}
+.medium {
+  font-size: 35px;
 }
 
 /**
@@ -163,9 +174,7 @@ export default {
           display: flex;
           justify-content: space-around;
           .single-day {
-            span {
-              font-size: 15px;
-            }
+            padding: 30px 0;
           }
         }
       }
@@ -177,6 +186,9 @@ export default {
       .wrapper {
         .box {
           background-color: rgba(255, 255, 255, 0.6);
+          &.c {
+            display: block;
+          }
         }
       }
     }
