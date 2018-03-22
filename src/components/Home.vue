@@ -38,7 +38,6 @@
       </div>
     </div>
     <v-btn class="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
-    <v-btn class="primary" to='/contact'>Contact</v-btn>
   </div>
   <gmap-map
     v-if="!loading"
@@ -89,6 +88,7 @@ export default {
         // console.log(result)
         this.temp = result.temperature
         this.currTime = result.time
+        this.icon = result.icon
         console.log(result)
       })
     },
@@ -97,7 +97,6 @@ export default {
       .then(result => {
         this.latitude = result.latitude
         this.longitude = result.longitude
-        this.icon = result.daily.icon
         this.days = result.daily.data
         axios.post(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${result.latitude},${result.longitude}&key=${apiKey}`)
         .then(response => {
