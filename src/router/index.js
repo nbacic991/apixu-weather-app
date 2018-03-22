@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Home from '@/components/Home'
 import PlacesNearby from '@/components/PlacesNearby'
+import Contact from '@/components/Contact'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
       name: 'places',
       component: PlacesNearby,
       props: true
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: Contact
     }
   ]
 })

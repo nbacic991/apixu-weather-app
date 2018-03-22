@@ -10,6 +10,7 @@
         :label="id"
         style="width: 100%; height: 300px; position: relative;">
         <gmap-marker v-for="(result, i) in results" :key="i"
+          @click="open = !open"
           :label="result.name"
           v-bind:position="{lat: result.geometry.location.lat, lng: result.geometry.location.lng}">
         </gmap-marker>
@@ -34,7 +35,8 @@ export default {
       city: this.id,
       results: [],
       lat: '',
-      long: ''
+      long: '',
+      open: false
     }
   },
   mounted() {

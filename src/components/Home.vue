@@ -38,6 +38,7 @@
       </div>
     </div>
     <v-btn class="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
+    <v-btn class="primary" to='/contact'>Contact</v-btn>
   </div>
   <gmap-map
     v-if="!loading"
