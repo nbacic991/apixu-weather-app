@@ -12,7 +12,7 @@
         <div class="box a space">
           <h3 class="medium">{{ city }}</h3>
           <br>
-          <p>Current time is: {{ currTime | moment }}</p>
+          <p>Current time: {{ currTime | moment }}</p>
           <span :class="icon"></span>
           <p>{{ summary }}</p>
           <p class="large">
@@ -40,7 +40,8 @@
         </div>
         <div class="box c">
           <div v-for="(day, i) in days" :key="i" class="single-day">
-            <p>{{ day.dateTime._i | dayFormatter }}</p>
+            <p class="day">{{ day.dateTime._i | dayFormatter }}</p>
+            <p class="date">{{ day.dateTime._i | dateFormatter }}</p>
             <span>{{ ((day.temperatureMax - 32) * 0.5556).toFixed(0) + '°C' }}</span>
             <span>/</span>
             <span>{{ ((day.temperatureMin - 32) * 0.5556).toFixed(0) + '°C' }}</span>
@@ -140,6 +141,9 @@ export default {
     },
     dayFormatter(value) {
       return moment(value).format('dddd');
+    },
+    dateFormatter(value) {
+      return moment(value).format('MMMM Do');
     }
   }
 }
@@ -347,6 +351,10 @@ export default {
               max-width: 20px;
               width: 100%;
               height: 20px;
+            }
+            .day,
+            .date {
+              text-transform: capitalize;
             }
           }
         }
