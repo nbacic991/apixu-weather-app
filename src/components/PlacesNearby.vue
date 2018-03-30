@@ -6,11 +6,11 @@
         <select
           class="form-control" 
           v-model="placeType" 
-          @change="changePlaceType">
+          @change="nearByPlaces">
           <option disabled value="">Select place type: ex. Restaurant</option>
           <option 
           v-for="item in items.json"
-          :key="item"
+          :key="item.name"
           :label="item.name"
           class="object">{{ item.value }}</option>
         </select>
@@ -31,7 +31,12 @@
         </gmap-map>
       </div>
       <div class="info">
-        <h2>Some more stuff comming soon ! :)</h2>
+        <div v-for="result in results" :key="result.id" class="placeID">
+          <p>{{ result.name }}</p>
+          <p>{{ result.vicinity }}</p>
+          <p>{{ result.photos[0].photo_reference }}</p>
+          <img :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=' + result.photos[0].photo_reference + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc'" alt="" />
+        </div>
       </div>
   </div>
 </template>
@@ -42,6 +47,10 @@ import axios from 'axios'
 import moment from 'moment'
 import json from '../assets/json/data.json'
 import '../assets/weather-icons.min.css'
+
+const proxyurl = "https://cors-anywhere.herokuapp.com/";
+const apiKey = 'AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc'
+
 
 export default {
   props: ['id'],
@@ -54,6 +63,8 @@ export default {
       placeType: '',
       e1: null,
       items: json,
+      image: '',
+      placeIds: [],
       open: false
     }
   },
@@ -66,16 +77,27 @@ export default {
     thisCity() {
       DarkSkyApi.loadForecast() 
         .then(result => {
+        // console.log(result)
         this.lat = result.latitude
         this.long = result.longitude
       })
     },
     changePlaceType() {
-      const proxyurl = "https://cors-anywhere.herokuapp.com/";
         axios.get(proxyurl + `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},${this.long}&type=${this.placeType}&radius=5000&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc`)
         .then(response => {
           this.results = response.data.results
+          
+          console.log(this.results)
       })
+    },
+    nearByPlaces() {
+      this.changePlaceType()
+      // axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeIdOne}&key=${apiKey}`)
+      //   .then(response => {
+      //     console.log(response)
+      //     this.image = response.data.result.photos[0].photo_reference
+      //     console.log(this.image)
+      // })
     }
   }
 }
@@ -97,6 +119,13 @@ export default {
   }
   .info {
     padding: 20px 0;
+  }
+  .placeID {
+    margin-bottom: 20px;
+    img {
+      max-width: 150px;
+      width: 100%;
+    }
   }
 }
 </style>
