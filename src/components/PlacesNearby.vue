@@ -15,7 +15,20 @@
           class="object">{{ item.value }}</option>
         </select>
       </div>
+      <div class="form-group">
+        <select
+          class="form-control" 
+          v-model="radius" 
+          @change="changePlaceType">
+          <option 
+          v-for="item in items.radius"
+          :key="item.value"
+          :label="item.value"
+          class="object">{{ item.value }}</option>
+        </select>
+      </div>
       </v-container>
+      <p class="search-results">Search results: {{ results.length }}</p>
       <div style="position: relative;">
         <gmap-map
           :options="{scrollwheel: false}"
@@ -31,11 +44,12 @@
         </gmap-map>
       </div>
       <div class="info">
-        <div v-for="result in results" :key="result.id" class="placeID">
-          <p>{{ result.name }}</p>
+        <div v-for="result in results" 
+        :key="result.id" 
+        class="placeID">
+        
+          <h3>{{ result.name }}</h3>
           <p>{{ result.vicinity }}</p>
-          <p>{{ result.photos[0].photo_reference }}</p>
-          <img :src="'https://maps.googleapis.com/maps/api/place/photo?maxwidth=1200&photoreference=' + result.photos[0].photo_reference + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc'" alt="" />
         </div>
       </div>
   </div>
@@ -61,10 +75,8 @@ export default {
       lat: '',
       long: '',
       placeType: '',
-      e1: null,
+      radius: '',
       items: json,
-      image: '',
-      placeIds: [],
       open: false
     }
   },
@@ -77,13 +89,12 @@ export default {
     thisCity() {
       DarkSkyApi.loadForecast() 
         .then(result => {
-        // console.log(result)
         this.lat = result.latitude
         this.long = result.longitude
       })
     },
     changePlaceType() {
-        axios.get(proxyurl + `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},${this.long}&type=${this.placeType}&radius=5000&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc`)
+        axios.get(proxyurl + `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},${this.long}&type=${this.placeType}&radius=${this.radius}&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc`)
         .then(response => {
           this.results = response.data.results
           
@@ -92,12 +103,6 @@ export default {
     },
     nearByPlaces() {
       this.changePlaceType()
-      // axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeIdOne}&key=${apiKey}`)
-      //   .then(response => {
-      //     console.log(response)
-      //     this.image = response.data.result.photos[0].photo_reference
-      //     console.log(this.image)
-      // })
     }
   }
 }
@@ -105,6 +110,7 @@ export default {
 
 <style lang="scss">
 .nearby {
+  font-family: 'Mada', sans-serif;
   background-color: rgba(0,0,0,0.2);
   h1,
   h2,
@@ -114,18 +120,31 @@ export default {
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
+  .search-results {
+    font-size: 25px;
+    text-decoration: underline;
+  }
   .object {
     text-transform: capitalize;
   }
   .info {
     padding: 20px 0;
-  }
-  .placeID {
-    margin-bottom: 20px;
-    img {
-      max-width: 150px;
-      width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-column-gap: 10px;
+    @media screen and (max-width: 500px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .placeID {
+      flex-basis: 33%;
+      margin-bottom: 20px;
+      padding: 15px;
+      img {
+        max-width: 150px;
+        width: 100%;
+      }
     }
   }
+  
 }
 </style>

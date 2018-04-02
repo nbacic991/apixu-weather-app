@@ -1,11 +1,12 @@
 <template>
-<div >
+<div>
   <v-progress-circular 
-        indeterminate
-        color="primary--text"
-        :width="7"
-        :size="70"
-        v-if="loading"></v-progress-circular>
+    indeterminate
+    color="primary--text"
+    :width="7"
+    :size="70"
+    v-if="loading">
+  </v-progress-circular>
   <div v-if="!loading" class="main-app" v-bind:style="{ 'background-image': 'url(https://maps.googleapis.com/maps/api/place/photo?maxwidth=12000&photoreference=' + image + '&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc)' }">
     <div class='main'>
       <div class="wrapper">
