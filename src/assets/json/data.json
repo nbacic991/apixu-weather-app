@@ -1,4 +1,14 @@
 {
+    "menuItems": [
+        {
+            "name": "Home",
+            "value": "/"
+        },
+        {
+            "name": "About",
+            "value": "/about"
+        }
+    ],
     "json": [
         {
             "name": "Accounting",

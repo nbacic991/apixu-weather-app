@@ -15,11 +15,15 @@
           class="object">{{ item.value }}</option>
         </select>
       </div>
+      <v-alert v-if="open" type="error" :value="true" dismissible @click="open = !open">
+        Please choose object type.
+      </v-alert>
       <div class="form-group">
         <select
           class="form-control" 
           v-model="radius" 
           @change="changePlaceType">
+          <option disabled value="">Select radius: ex. 1000</option>
           <option 
           v-for="item in items.radius"
           :key="item.value"
@@ -43,7 +47,7 @@
           </gmap-marker>
         </gmap-map>
       </div>
-      <div class="info">
+      <div class="details">
         <div v-for="result in results" 
         :key="result.id" 
         class="placeID">
@@ -84,6 +88,9 @@ export default {
     this.thisCity()
   },
   computed: {
+    loading () {
+      return this.$store.getters.loading
+    }
   },
   methods: {
     thisCity() {
@@ -94,12 +101,17 @@ export default {
       })
     },
     changePlaceType() {
-        axios.get(proxyurl + `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},${this.long}&type=${this.placeType}&radius=${this.radius}&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc`)
+        if(this.placeType == '') {
+          this.open = true
+        } else {
+          axios.get(proxyurl + `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${this.lat},${this.long}&type=${this.placeType}&radius=${this.radius}&key=AIzaSyCYwUml9eACiBtWu_24pVk07h-zzOrJghc`)
         .then(response => {
           this.results = response.data.results
-          
-          console.log(this.results)
-      })
+          this.$store.dispatch('finishLoading', false)
+          this.open = false
+          console.log(this.results) 
+        })
+      }
     },
     nearByPlaces() {
       this.changePlaceType()
@@ -127,7 +139,7 @@ export default {
   .object {
     text-transform: capitalize;
   }
-  .info {
+  .details {
     padding: 20px 0;
     display: grid;
     grid-template-columns: repeat(3, 1fr);

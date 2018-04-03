@@ -50,7 +50,7 @@
         </div>
       </div>
     </div>
-    <v-btn class="primary" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
+    <v-btn class="info primary--text" :to="{ name: 'places', params: { id: city } }">Exlore places near You</v-btn>
   </div>
   <gmap-map
     v-if="!loading"
@@ -88,8 +88,12 @@ export default {
       currTime: '',
       wind: '',
       summary: '',
-      days: [],
-      loading: true
+      days: []
+    }
+  },
+  computed: {
+    loading () {
+      return this.$store.getters.loading
     }
   },
   mounted() {
@@ -126,7 +130,7 @@ export default {
               axios.post(proxyurl + `https://maps.googleapis.com/maps/api/place/details/json?placeid=${this.placeId}&key=${apiKey}`)
               .then(response => {
                 this.image = response.data.result.photos[0].photo_reference
-                this.loading = false
+                this.$store.dispatch('finishLoading', false)
               })
             })
         })
@@ -345,9 +349,15 @@ export default {
           grid-column: 1 / 3;
           grid-row: 2;
           grid-template-rows: 2;
-          grid-template-columns: repeat(8, 1fr);
+          grid-template-columns: repeat(4, 1fr);
+          grid-column-gap: 15px;
           .single-day {
-            padding: 20px 0;
+            padding: 20px 10px;
+            border-bottom: 2px solid gray;
+            &:last-child,
+            &:nth-child(4) {
+              border-right: none;
+            }
             img {
               max-width: 20px;
               width: 100%;
